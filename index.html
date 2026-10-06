@@ -57,6 +57,49 @@
             min-height: 100vh;
         }
 
+        /* --- حاوية تساقط البتلات والزهور الذهبية والعاجية --- */
+        .petals-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .petal {
+            position: absolute;
+            top: -10%;
+            user-select: none;
+            animation-name: fall, sway;
+            animation-timing-function: linear, ease-in-out;
+            animation-iteration-count: infinite, infinite;
+            animation-play-state: running, running;
+        }
+
+        @keyframes fall {
+            0% {
+                top: -10%;
+            }
+            100% {
+                top: 105%;
+            }
+        }
+
+        @keyframes sway {
+            0% {
+                transform: translateX(0) rotate(0deg);
+            }
+            50% {
+                transform: translateX(45px) rotate(180deg);
+            }
+            100% {
+                transform: translateX(0) rotate(360deg);
+            }
+        }
+
         /* --- شاشة الظرف الخلفية بملء الشاشة --- */
         #envelope-wrapper {
             position: fixed;
@@ -65,7 +108,7 @@
             width: 100vw;
             height: 100vh;
             height: 100dvh;
-            background-color: #F8F3EA; /* لون خلفية عاجي مكمل للأطراف */
+            background-color: #F8F3EA;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -75,19 +118,17 @@
             transition: opacity 1.2s ease, visibility 1.2s ease;
         }
 
-        /* تنسيق صورة الظرف بنسبة 9:16 المخصصة للموبايل */
         .envelope-bg-img {
             width: 100%;
             height: 100%;
             max-width: 100vw;
             max-height: 100dvh;
             aspect-ratio: 9 / 16;
-            object-fit: contain; /* إظهار الصورة بالكامل دون قص الأطراف أو الختم */
+            object-fit: contain;
             object-position: center;
             pointer-events: none;
         }
 
-        /* عنصر انبعاث توهج نور الشمس من منتصف الختم */
         #sunlight-burst {
             position: absolute;
             top: 50%;
@@ -546,6 +587,9 @@
 
 <body>
 
+    <!-- حاوية تساقط بتلات الزهور الذهبية والعاجية -->
+    <div class="petals-container" id="petalsContainer"></div>
+
     <!-- ملف الصوت المباشر -->
     <audio id="bgMusic" loop preload="auto">
         <source src="song.mp3" type="audio/mpeg">
@@ -556,7 +600,7 @@
         <span id="musicIcon">🎵</span>
     </button>
 
-    <!-- شاشة الظرف الخلفية المباشرة مع صورة 9:16 وانبعاث توهج الشمس عند الكبس -->
+    <!-- شاشة الظرف الخلفية المباشرة -->
     <div id="envelope-wrapper" onclick="openEnvelopeWithSunlight()">
         <img src="envelope-bg.jpg" alt="ظرف الدعوة" class="envelope-bg-img">
         <div id="sunlight-burst"></div>
@@ -729,7 +773,77 @@
     </div>
 
     <script>
-        // إطلاق نور الشمس وفتح الدعوة وتشغيل الأغنية
+        let autoScrollInterval;
+        let isUserInteracting = false;
+
+        // إنشاء بتلات الزهور الذهبية والعاجية الناعمة
+        function createPetals() {
+            const container = document.getElementById('petalsContainer');
+            if (!container) return;
+            
+            const petalCount = 18; 
+            const petalTypes = [
+                { color: '#C5A059', size: 16, opacity: 0.75 },
+                { color: '#E5C98B', size: 13, opacity: 0.8 },
+                { color: '#FAF7F2', size: 18, opacity: 0.85 },
+                { color: '#D4AF37', size: 14, opacity: 0.7 }
+            ];
+
+            for (let i = 0; i < petalCount; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                
+                const type = petalTypes[Math.floor(Math.random() * petalTypes.length)];
+                
+                petal.innerHTML = `
+                    <svg width="${type.size}" height="${type.size}" viewBox="0 0 24 24" fill="${type.color}" style="opacity: ${type.opacity}; filter: drop-shadow(0px 1px 2px rgba(197,160,89,0.2));">
+                        <path d="M12,2 C12,2 16,6 16,12 C16,18 12,22 12,22 C12,22 8,18 8,12 C8,6 12,2 12,2 Z"/>
+                    </svg>
+                `;
+
+                const startLeft = Math.random() * 100;
+                const duration = 8 + Math.random() * 6;
+                const delay = Math.random() * 8;
+
+                petal.style.left = `${startLeft}%`;
+                petal.style.animationDuration = `${duration}s, ${duration / 2}s`;
+                petal.style.animationDelay = `${delay}s, ${delay}s`;
+
+                container.appendChild(petal);
+            }
+        }
+
+        // بدء السكرول التلقائي للموبايل بعد ثانية واحدة من فتح الظرف
+        function startAutoScroll() {
+            isUserInteracting = false;
+
+            setTimeout(() => {
+                if (autoScrollInterval) clearInterval(autoScrollInterval);
+
+                autoScrollInterval = setInterval(() => {
+                    if (!isUserInteracting) {
+                        window.scrollBy({
+                            top: 15,
+                            behavior: 'smooth'
+                        });
+
+                        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5) {
+                            clearInterval(autoScrollInterval);
+                        }
+                    }
+                }, 20);
+            }, 1000); 
+        }
+
+        // إيقاف السكرول عند لمس الزائر للشاشة بنفسه
+        function stopAutoScrollOnUserAction() {
+            isUserInteracting = true;
+            if (autoScrollInterval) {
+                clearInterval(autoScrollInterval);
+            }
+        }
+
+        // إطلاق نور الشمس وفتح الدعوة وتشغيل الأغنية وبدء السكرول
         function openEnvelopeWithSunlight() {
             const burst = document.getElementById('sunlight-burst');
             const wrapper = document.getElementById('envelope-wrapper');
@@ -750,6 +864,8 @@
                 wrapper.style.opacity = '0';
                 setTimeout(() => {
                     wrapper.style.visibility = 'hidden';
+                    // بدء التمرير التلقائي فور اختفاء الظرف بـ ثانية
+                    startAutoScroll();
                 }, 1000);
             }, 700);
         }
@@ -796,6 +912,7 @@
 
         // وظائف عارض الصور المكبرة
         function openModal(src) {
+            stopAutoScrollOnUserAction();
             const modal = document.getElementById('imageModal');
             const modalImg = document.getElementById('modalImg');
             modalImg.src = src;
@@ -806,6 +923,14 @@
             const modal = document.getElementById('imageModal');
             modal.classList.remove('active');
         }
+
+        // الاستماع لحركة اللمس وعجلة التمرير لمنح التحكم الكامل للمستخدم فور لمسه الشاشة
+        window.addEventListener('touchstart', stopAutoScrollOnUserAction, { passive: true });
+        window.addEventListener('touchmove', stopAutoScrollOnUserAction, { passive: true });
+        window.addEventListener('wheel', stopAutoScrollOnUserAction, { passive: true });
+
+        // تشغيل تأثير البتلات
+        document.addEventListener('DOMContentLoaded', createPetals);
     </script>
 </body>
 
