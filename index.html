@@ -349,12 +349,42 @@
             letter-spacing: 1px;
         }
 
+        /* --- بطاقة التوقيت المعدلة بالكامل --- */
+        .event-time-card {
+            background: var(--card-ivory);
+            border: var(--border-gold);
+            border-radius: 14px;
+            padding: 15px 25px;
+            margin: 30px auto 0 auto;
+            max-width: 500px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            direction: ltr; /* لجعل الاتجاه سلس للأوقات والسهم */
+        }
+
+        .event-time-card .time-time {
+            font-family: 'Marcellus', serif;
+            font-size: clamp(20px, 4.5vw, 24px);
+            color: var(--gold-dark);
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .event-time-card .time-arrow {
+            color: var(--gold-classic);
+            font-size: 20px;
+            margin: 0 4px;
+        }
+
         .calendar-card {
             background: var(--card-ivory);
             border: var(--border-gold);
             border-radius: 16px;
             padding: 30px 20px;
-            margin: 35px auto 0 auto;
+            margin: 20px auto 0 auto;
             max-width: 500px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.02);
         }
@@ -386,6 +416,7 @@
             padding: 10px 0;
             border-radius: 50%;
             color: var(--text-dark);
+            font-family: 'Marcellus', serif;
         }
 
         .event-day {
@@ -601,9 +632,6 @@
         <source src="song.mp3" type="audio/mpeg">
     </audio>
 
-    <!--  الموسيقى العائم -->
-   
-
     <!-- شاشة الظرف الخلفية المباشرة -->
     <div id="envelope-wrapper" onclick="openEnvelopeWithSunlight()">
         <img src="envelope-bg.jpg" alt="ظرف الدعوة" class="envelope-bg-img">
@@ -642,7 +670,7 @@
 
         <div class="section-divider"></div>
 
-        <!-- العداد التنازلي والتقويم -->
+        <!-- العداد التنازلي والتوقيت والتقويم -->
         <div class="section">
             <div class="countdown-title">The Celebration Begins</div>
             <div class="timer" id="timer">
@@ -650,6 +678,13 @@
                 <div class="time-box"><span id="hours">00</span><label>Hours</label></div>
                 <div class="time-box"><span id="minutes">00</span><label>Minutes</label></div>
                 <div class="time-box"><span id="seconds">00</span><label>Seconds</label></div>
+            </div>
+
+            <!-- بطاقة توقيت الحفل بالشكل والخط المطلوبين -->
+            <div class="event-time-card">
+                <span class="time-time">7:00 PM</span>
+                <span class="time-arrow">➔</span>
+                <span class="time-time">12:00 PM</span>
             </div>
 
             <!-- تقويم شهر أكتوبر 2026 -->
